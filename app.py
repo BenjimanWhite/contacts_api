@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, abort, make_response
 app = Flask(__name__)
 
 contacts = [
@@ -24,3 +24,17 @@ contacts = [
 @app.route('/contacts', methods=['GET'])
 def get_contacts():
     return jsonify({'contacts': contacts})
+
+# Return a single contact by its id
+@app.route('/contacts/<int:id>', methods=['GET'])
+def get_contact(id):
+    contact = list(filter(lambda contact: contact['id'] == id, contacts))
+    if len(contact) == 0:
+        abort(404)
+    else:
+        return jsonify({'contact': contact[0]})
+
+@app.errorhandler(404)
+def not_found(error):
+  message = {'error': 'Contact not found'}
+  return make_response(jsonify(message), 404)
