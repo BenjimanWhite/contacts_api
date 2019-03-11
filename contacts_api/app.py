@@ -34,19 +34,19 @@ def get_contact(id):
         error_message = {'error': 'Contact not found.'}
         return make_response(jsonify(error_message), 404)
     else:
-        return jsonify({'contact': contact[0]})
+        return jsonify(contact[0])
 
 # Create a new Contact
 @app.route('/contacts', methods=['POST'])
 def create_contact():
     
-    if not request.json:
-        error_message = {'error': 'Bad request. You must supply data in json format.'}
-        return make_response(jsonify(error_message), 400)
+    # if not request.get_json():
+    #     error_message = {'error': 'Bad request. You must supply data in json format.'}
+    #     return make_response(jsonify(error_message), 400)
 
     if not contacts:
         new_contact = {
-            'id': 1,
+            'id': 1
         }
     else:
         new_contact = {
@@ -67,21 +67,23 @@ def create_contact():
     if 'last_name' in request.json:
         new_contact['last_name'] = request.json['last_name']
     else:
-        new_contact['last_name'] = ""
+        new_contact['last_name'] = ''
 
     if 'phone_number' in request.json:
-        if isinstance(request.json['phone_number'], str) and request.json['phone_number'].isalpha():
+        number = request.json['phone_number']
+        alphabetical_chars = '[a-zA-Z]+'
+        if isinstance(number, str) and re.search(alphabetical_chars, number):
             error_message = {'error': 'Bad request. The phone number you provided contains letters.'}
             return make_response(jsonify(error_message), 400)
 
         new_contact['phone_number'] = request.json['phone_number']
     else:
-        new_contact['phone_number'] = ""
+        new_contact['phone_number'] = ''
 
     if 'address' in request.json:
         new_contact['address'] = request.json['address']
     else:
-        new_contact['address'] = ""
+        new_contact['address'] = ''
 
     if 'email' in request.json:
         email_regex = re.compile(r'[\w\.-]+@[\w\.-]+')
@@ -91,10 +93,10 @@ def create_contact():
 
         new_contact['email'] = request.json['email']
     else:
-        new_contact['email'] = ""
+        new_contact['email'] = ''
 
     contacts.append(new_contact)
-    return jsonify({'contact': new_contact}), 201
+    return jsonify(new_contact), 201
 
 
 
