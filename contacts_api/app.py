@@ -24,6 +24,29 @@ contacts = [
 # Return all contacts
 @app.route('/contacts', methods=['GET'])
 def get_contacts():
+    if request.args:
+        query_fields = request.args.items() # query_fields is an iterator of tuples containing query string key=value pairs
+        for pair in query_fields:
+            key = pair[0]
+            value = pair[1]
+            if(key == 'first_name'):
+                search_results = list(filter(lambda contact: contact[key] == value, contacts))
+                return jsonify({'contacts': search_results})
+            if(key == 'last_name'):
+                search_results = list(filter(lambda contact: contact[key] == value, contacts))
+                return jsonify({'contacts': search_results})
+            if(key == 'phone_number'):
+                search_results = list(filter(lambda contact: contact[key] == value, contacts))
+                return jsonify({'contacts': search_results})
+            if(key == 'address'):
+                search_results = list(filter(lambda contact: contact[key] == value, contacts))
+                return jsonify({'contacts': search_results})
+            if(key == 'email'):
+                search_results = list(filter(lambda contact: contact[key] == value, contacts))
+                return jsonify({'contacts': search_results})
+        error_message = {'error': 'Bad request. You supplied disallowed query parameters.'}
+        return make_response(jsonify(error_message), 400)
+
     return jsonify({'contacts': contacts})
 
 # Return a single contact by its id
@@ -200,6 +223,7 @@ def delete_contact(id):
     return jsonify(success_message), 200
 
 ## TODO
+# test address fields in create and update
 # Add HTTP Basic auth - store reference to the authenticated user in the modified record!
 # Test http basic auth
 # Add filter functionality by query string

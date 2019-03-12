@@ -7,12 +7,22 @@ def app():
 
 
 def test_get_contacts(app):
+    # Test - getting all contacts
     test_contacts = {"contacts": contacts_api.app.contacts}
     json_header = "application/json"
     response = app.get('/contacts')
     assert response.status_code == 200  
     assert json_header in response.headers.get("content-type")
     assert test_contacts == response.get_json()
+
+    # Test - searching by query parameters
+    test_contact = contacts_api.app.contacts[0]
+    query_key = 'email'
+    query_value = test_contact['email']
+    response = app.get(f"/contacts?{query_key}={query_value}")
+    assert response.status_code == 200  
+    assert json_header in response.headers.get("content-type")
+    assert {'contacts': [test_contact]} == response.get_json()
 
 
 def test_get_contact(app):
