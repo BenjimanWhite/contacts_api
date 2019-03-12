@@ -41,9 +41,8 @@ def get_contact(id):
 def create_contact():
     
     # TODO TEST THIS
-    if not request.get_json():
-        error_message = {'error': 'Bad request. You must supply json data.'}
-        return make_response(jsonify(error_message), 400)
+    if not request.headers['content-type'] == 'application/json':
+        abort(400)
 
     if not contacts:
         new_contact = {
@@ -58,7 +57,6 @@ def create_contact():
         error_message = {'error': 'Bad request. You must supply at least a first name.'}
         return make_response(jsonify(error_message), 400)
 
-    #TODO TEST THIS
     if not isinstance(request.json['first_name'], str):
         error_message = {'error': 'Bad request. First name must be a string.'}
         return make_response(jsonify(error_message), 400)
@@ -189,6 +187,8 @@ def update_contact(id):
         contact[0]['email'] = request.json['email'].strip()
 
     return jsonify(contact[0]), 200
+
+
 
 ## TODO
 # Add test case for non-string passed into create function (added today)
