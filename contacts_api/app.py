@@ -40,7 +40,7 @@ def get_contact(id):
 @app.route('/contacts', methods=['POST'])
 def create_contact():
     
-    # TODO TEST THIS
+    # Disallow non-json
     if not request.headers['content-type'] == 'application/json':
         abort(400)
 
@@ -128,9 +128,8 @@ def update_contact(id):
         error_message = {'error': 'Contact not found.'}
         return make_response(jsonify(error_message), 404)
 
-    if not request.get_json():
-        error_message = {'error': 'Bad request. You must supply json data.'}
-        return make_response(jsonify(error_message), 400)
+    if not request.headers['content-type'] == 'application/json':
+        abort(400)
 
     if 'first_name' in request.json:
         if not isinstance(request.json['first_name'], str):
@@ -189,11 +188,18 @@ def update_contact(id):
     return jsonify(contact[0]), 200
 
 
+@app.route('/contacts/<int:id>', methods=['DELETE'])
+def delete_contact(id):
+    contact = list(filter(lambda contact: contact['id'] == id, contacts))
+    if len(contact) == 0:
+        error_message = {'error': 'Contact not found.'}
+        return make_response(jsonify(error_message), 404)
+
+    contacts.remove(contact[0])
+    success_message = {'result': 'contact deleted.'}
+    return jsonify(success_message), 200
 
 ## TODO
-# Add test case for non-string passed into create function (added today)
-# Add delete function
-# Test update, delete actions
 # Add HTTP Basic auth - store reference to the authenticated user in the modified record!
 # Test http basic auth
 # Add filter functionality by query string
