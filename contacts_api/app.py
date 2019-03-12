@@ -21,6 +21,8 @@ contacts = [
     }
 ]
 
+authorized_credentials = [{'benjiman': 'supersecretpass'}]
+
 # Return all contacts
 @app.route('/contacts', methods=['GET'])
 def get_contacts():
@@ -44,6 +46,7 @@ def get_contacts():
             if(key == 'email'):
                 search_results = list(filter(lambda contact: contact[key] == value, contacts))
                 return jsonify({'contacts': search_results})
+
         error_message = {'error': 'Bad request. You supplied disallowed query parameters.'}
         return make_response(jsonify(error_message), 400)
 
@@ -62,6 +65,23 @@ def get_contact(id):
 # Create a new Contact
 @app.route('/contacts', methods=['POST'])
 def create_contact():
+    if not request.authorization:
+        error_message = {'error': 'Forbidden. You must authenticate to access this.'}
+        return make_response(jsonify(error_message), 401)
+
+    request_username = request.authorization['username']
+    request_password = request.authorization['password']
+        
+    is_username_authorized = any(request_username in d for d in authorized_credentials)
+    if not is_username_authorized:
+        error_message = {'error': 'Forbidden. Please supply a valid username.'}
+        return make_response(jsonify(error_message), 401)
+
+    is_password_authorized = authorized_credentials[0][request_username] == request_password
+    
+    if not is_password_authorized:
+        error_message = {'error': 'Forbidden. Please supply a valid password.'}
+        return make_response(jsonify(error_message), 401)
     
     # Disallow non-json
     if not request.headers['content-type'] == 'application/json':
@@ -140,11 +160,32 @@ def create_contact():
     else:
         new_contact['email'] = ''
 
+    new_contact['last_modified_by'] = request_username
+
     contacts.append(new_contact)
     return jsonify(new_contact), 201
 
 @app.route('/contacts/<int:id>', methods=['PUT'])
 def update_contact(id):
+    if not request.authorization:
+        error_message = {'error': 'Forbidden. You must authenticate to access this.'}
+        return make_response(jsonify(error_message), 401)
+
+    request_username = request.authorization['username']
+    request_password = request.authorization['password']
+        
+    is_username_authorized = any(request_username in d for d in authorized_credentials)
+    if not is_username_authorized:
+        error_message = {'error': 'Forbidden. Please supply a valid username.'}
+        return make_response(jsonify(error_message), 401)
+
+    is_password_authorized = authorized_credentials[0][request_username] == request_password
+    
+    if not is_password_authorized:
+        error_message = {'error': 'Forbidden. Please supply a valid password.'}
+        return make_response(jsonify(error_message), 401)
+
+
     contact = list(filter(lambda contact: contact['id'] == id, contacts))
 
     if len(contact) == 0:
@@ -208,11 +249,31 @@ def update_contact(id):
 
         contact[0]['email'] = request.json['email'].strip()
 
+    contact[0]['last_modified_by'] = request_username
+
     return jsonify(contact[0]), 200
 
 
 @app.route('/contacts/<int:id>', methods=['DELETE'])
 def delete_contact(id):
+    if not request.authorization:
+        error_message = {'error': 'Forbidden. You must authenticate to access this.'}
+        return make_response(jsonify(error_message), 401)
+
+    request_username = request.authorization['username']
+    request_password = request.authorization['password']
+        
+    is_username_authorized = any(request_username in d for d in authorized_credentials)
+    if not is_username_authorized:
+        error_message = {'error': 'Forbidden. Please supply a valid username.'}
+        return make_response(jsonify(error_message), 401)
+
+    is_password_authorized = authorized_credentials[0][request_username] == request_password
+    
+    if not is_password_authorized:
+        error_message = {'error': 'Forbidden. Please supply a valid password.'}
+        return make_response(jsonify(error_message), 401)
+
     contact = list(filter(lambda contact: contact['id'] == id, contacts))
     if len(contact) == 0:
         error_message = {'error': 'Contact not found.'}
@@ -226,8 +287,6 @@ def delete_contact(id):
 # test address fields in create and update
 # Add HTTP Basic auth - store reference to the authenticated user in the modified record!
 # Test http basic auth
-# Add filter functionality by query string
-# Test filter Functionality by query string
 # document api
 # decompose app
 # Test distribution on another machine
