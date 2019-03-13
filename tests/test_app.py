@@ -59,8 +59,6 @@ def test_create_contact(app):
     assert valid_new_contact == response.get_json()
     del valid_new_contact['id']
 
-    # Test that id is properly set if our contacts list is empty TODO
-
     # Test bad json passed in
     xml = "<first_name> Bell </first_name>"
     response = app.post('/contacts', headers=valid_auth_header, data=xml)
@@ -189,6 +187,17 @@ def test_create_contact(app):
     assert response.status_code == 401
     assert response.get_json() == error
 
+    # Test that new contact id is set properly when contacts list becomes empty
+    app.delete(f"/contacts/1", headers=valid_auth_header)
+    app.delete(f"/contacts/2", headers=valid_auth_header)
+    app.delete(f"/contacts/3", headers=valid_auth_header)
+    app.delete(f"/contacts/4", headers=valid_auth_header)
+    response = app.post('/contacts', headers=valid_auth_header, json=valid_new_contact)
+    valid_new_contact['id'] = 1
+    valid_new_contact['last_modified_by'] = 'benjiman'
+    assert response.status_code == 201
+    assert json_header in response.headers.get("content-type")
+    assert valid_new_contact == response.get_json()
 
 def test_update_contact(app):
     valid_auth_header = {'Authorization': 'Basic YmVuamltYW46c3VwZXJzZWNyZXRwYXNz'}
@@ -357,46 +366,3 @@ def test_delete_contact(app):
     response = app.delete(f"/contacts/{contact_id}", headers=invalid_password_auth_header)
     assert response.status_code == 401
     assert response.get_json() == error
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
