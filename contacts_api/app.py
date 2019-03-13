@@ -282,34 +282,3 @@ def delete_contact(id):
     contacts.remove(contact[0])
     success_message = {'result': 'contact deleted.'}
     return jsonify(success_message), 200
-
-## TODO
-# test address fields in create and update
-# Add HTTP Basic auth - store reference to the authenticated user in the modified record!
-# Test http basic auth
-# document api
-# decompose app
-# Test distribution on another machine
-# send app
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
