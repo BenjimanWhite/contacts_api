@@ -81,36 +81,3 @@ example_updated_contact = {
 ___
 Delete a contact. Note that this requires the authorization header described under Authentication above.
 ```DELETE localhost:5000/contacts/4```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
