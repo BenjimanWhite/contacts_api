@@ -169,6 +169,26 @@ def test_create_contact(app):
     assert json_header in response.headers.get("content-type")
     assert response.get_json() == error
 
+    # Test - no auth headers provided
+    error = {'error': 'Forbidden. You must authenticate to access this.'}
+    response = app.post('/contacts', json=valid_new_contact)
+    assert response.status_code == 401
+    assert response.get_json() == error
+
+    # Test - invalid username provided
+    invalid_username_auth_header = {'Authorization': 'Basic Ym9vZ2V5bWFuOnN1cGVyc2VjcmV0cGFzcw=='}
+    error = {'error': 'Forbidden. Please supply a valid username.'}
+    response = app.post('/contacts', headers=invalid_username_auth_header, json=valid_new_contact)
+    assert response.status_code == 401
+    assert response.get_json() == error
+
+    # Test - invalid password provided
+    invalid_password_auth_header = {'Authorization': 'Basic YmVuamltYW46c3VwZXJzZWNyZXRwYSQk'}
+    error = {'error': 'Forbidden. Please supply a valid password.'}
+    response = app.post('/contacts', headers=invalid_password_auth_header, json=valid_new_contact)
+    assert response.status_code == 401
+    assert response.get_json() == error
+
 
 def test_update_contact(app):
     valid_auth_header = {'Authorization': 'Basic YmVuamltYW46c3VwZXJzZWNyZXRwYXNz'}
@@ -280,8 +300,28 @@ def test_update_contact(app):
     assert json_header in response.headers.get("content-type")
     assert response.get_json() == error
 
+    # Test - no auth headers provided
+    error = {'error': 'Forbidden. You must authenticate to access this.'}
+    response = app.put(f"/contacts/{contact_id}", json=updated_contact)
+    assert response.status_code == 401
+    assert response.get_json() == error
+
+    # Test - invalid username provided
+    invalid_username_auth_header = {'Authorization': 'Basic Ym9vZ2V5bWFuOnN1cGVyc2VjcmV0cGFzcw=='}
+    error = {'error': 'Forbidden. Please supply a valid username.'}
+    response = app.put(f"/contacts/{contact_id}", headers=invalid_username_auth_header, json=updated_contact)
+    assert response.status_code == 401
+    assert response.get_json() == error
+
+    # Test - invalid password provided
+    invalid_password_auth_header = {'Authorization': 'Basic YmVuamltYW46c3VwZXJzZWNyZXRwYSQk'}
+    error = {'error': 'Forbidden. Please supply a valid password.'}
+    response = app.put(f"/contacts/{contact_id}", headers=invalid_password_auth_header, json=updated_contact)
+    assert response.status_code == 401
+    assert response.get_json() == error
+
 def test_delete_contact(app): 
-    valid_auth_header = {'Authorization': 'Basic YmVuamltYW46c3VwZXJzZWNyZXRwYXNz'} 
+    valid_auth_header = {'Authorization': 'Basic YmVuamltYW46c3VwZXJzZWNyZXRwYXNz'}
     contact = contacts_api.app.contacts[0]
     contact_id = contact['id']
 
@@ -297,6 +337,26 @@ def test_delete_contact(app):
     assert response.status_code == 200  
     assert 'application/json' in response.headers.get("content-type")
     assert success == response.get_json()
+
+    # Test - no auth headers provided
+    error = {'error': 'Forbidden. You must authenticate to access this.'}
+    response = app.delete(f"/contacts/{contact_id}")
+    assert response.status_code == 401
+    assert response.get_json() == error
+
+    # Test - invalid username provided
+    invalid_username_auth_header = {'Authorization': 'Basic Ym9vZ2V5bWFuOnN1cGVyc2VjcmV0cGFzcw=='}
+    error = {'error': 'Forbidden. Please supply a valid username.'}
+    response = app.delete(f"/contacts/{contact_id}", headers=invalid_username_auth_header)
+    assert response.status_code == 401
+    assert response.get_json() == error
+
+    # Test - invalid password provided
+    invalid_password_auth_header = {'Authorization': 'Basic YmVuamltYW46c3VwZXJzZWNyZXRwYSQk'}
+    error = {'error': 'Forbidden. Please supply a valid password.'}
+    response = app.delete(f"/contacts/{contact_id}", headers=invalid_password_auth_header)
+    assert response.status_code == 401
+    assert response.get_json() == error
 
 
 
