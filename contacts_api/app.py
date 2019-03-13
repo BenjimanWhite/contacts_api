@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort, make_response, request
+from flask import Flask, jsonify, abort, make_response, request, url_for
 import re
 app = Flask(__name__)
 
@@ -9,7 +9,9 @@ contacts = [
         'last_name': 'Hamilton',
         'phone_number': '6175557834',
         'address': '17 Inman St. Cambridge, MA 02139, USA',
-        'email': 'margaret@hamiltontechnologies.com'
+        'email': 'margaret@hamiltontechnologies.com',
+        'uri': 'http://localhost:5000/contacts/1'
+
     },
     {
         'id': 2,
@@ -17,7 +19,8 @@ contacts = [
         'last_name': 'Lovelace',
         'phone_number': '4803409032',
         'address': 'Great Russell St, Bloomsbury, London, WC1B 3DG, UK',
-        'email': 'ada@computingrocks.net'
+        'email': 'ada@computingrocks.net',
+        'uri': 'http://localhost:5000/contacts/2'
     }
 ]
 
@@ -162,8 +165,15 @@ def create_contact():
 
     new_contact['last_modified_by'] = request_username
 
+    # We don't want to return the contact with its id, but one with a uri to that contact instead
+    new_contact['uri'] = request.base_url + '/' + str(new_contact['id'])
+
+    return_contact = new_contact.copy()
+
     contacts.append(new_contact)
-    return jsonify(new_contact), 201
+
+    del return_contact['id']
+    return jsonify(return_contact), 201
 
 @app.route('/contacts/<int:id>', methods=['PUT'])
 def update_contact(id):

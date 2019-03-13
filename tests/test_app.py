@@ -44,20 +44,21 @@ def test_create_contact(app):
 
     # Test happiest path
     valid_new_contact = {
-        "first_name": "Bell",
-        "last_name": "Hooks",
-        "address": "300 Center St. Berea KY 40403 USA",
-        "phone_number": "(859) 985 - 2878",
-        "email": "bell@changingtheworld.edu"
+        'first_name': 'Bell',
+        'last_name': 'Hooks',
+        'address': '300 Center St. Berea KY 40403 USA',
+        'phone_number': '(859) 985 - 2878',
+        'email': 'bell@changingtheworld.edu',
+        'uri': 'http://localhost/contacts/3'
     }
     json_header = "application/json"
     response = app.post('/contacts', headers=valid_auth_header, json=valid_new_contact)
-    valid_new_contact['id'] = 3
+    #valid_new_contact['id'] = 3
     valid_new_contact['last_modified_by'] = 'benjiman'
     assert response.status_code == 201
     assert json_header in response.headers.get("content-type")
     assert valid_new_contact == response.get_json()
-    del valid_new_contact['id']
+    #del valid_new_contact['id']
 
     # Test bad json passed in
     xml = "<first_name> Bell </first_name>"
@@ -67,13 +68,13 @@ def test_create_contact(app):
     # Test - unspecified fields are assigned to ''
     only_first_name_contact = {"first_name": "Miriam"}
     expected_result = {
-        'id': 4,
         'first_name': 'Miriam',
         'last_name': '',
         'phone_number': '',
         'address': '',
         'email': '',
-        'last_modified_by': 'benjiman'
+        'last_modified_by': 'benjiman',
+        'uri': 'http://localhost/contacts/4'
     }
     response = app.post('/contacts', headers=valid_auth_header, json=only_first_name_contact)
     assert response.status_code == 201  
@@ -193,8 +194,8 @@ def test_create_contact(app):
     app.delete(f"/contacts/3", headers=valid_auth_header)
     app.delete(f"/contacts/4", headers=valid_auth_header)
     response = app.post('/contacts', headers=valid_auth_header, json=valid_new_contact)
-    valid_new_contact['id'] = 1
     valid_new_contact['last_modified_by'] = 'benjiman'
+    valid_new_contact['uri'] = 'http://localhost/contacts/1'
     assert response.status_code == 201
     assert json_header in response.headers.get("content-type")
     assert valid_new_contact == response.get_json()
@@ -214,6 +215,7 @@ def test_update_contact(app):
         'phone_number': '7863043389',
         'address': '345 Somewhere Ln. Portsmouth, VA 97878 USA',
         'email': 'erlmanp@somewhere.org',
+        'uri': f"http://localhost/contacts/{contact_id}",
         'last_modified_by': 'benjiman'
     }
     response = app.put(f"/contacts/{contact_id}", headers=valid_auth_header, json=updated_contact)

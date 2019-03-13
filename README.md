@@ -24,7 +24,7 @@ This application uses pytest. To run its tests execute in the root of the projec
 `pytest tests/`
 
 ### Base URL
-The base url for local development is `localhost:5000`
+The base url for local development is `http://localhost:5000`
 
 ### Authentication
 HTTP Basic Authentication is required to modify data (contact creation, updating, deletion). Because this is a simple api meant for local development only at the moment, you can use the following credentials to authenticate:
