@@ -11,7 +11,7 @@ Create a virtual environment in the root of the project directory:
 `$ python -m venv venv`
 
 Activate the virtual environment:
-`$ source bin/venv/activate`
+`$ source venv/bin/activate`
 
 Install dependencies and set up the application:
 `pip install .`
